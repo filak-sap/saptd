@@ -84,4 +84,11 @@ expect {
     eof { exit 5 }
 }
 
+expect {
+    "extracting data archives..." { }
+     eof { exit 5 }
+}
+
+set timeout 7200
+
 expect

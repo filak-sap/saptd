@@ -1,0 +1,21 @@
+FROM scratch
+
+LABEL purpose="SAP Test Drive System"
+LABEL author="Jakub Filak <jakub.filak@sap.com>"
+
+LABEL sid="npl"
+LABEL hostname="vhcalnplci"
+LABEL memory="4GB"
+LABEL diskspace="60GB"
+
+RUN /usr/bin/mkdir -p /usr/sap && /usr/bin/mkdir -p /sapmnt && /usr/bin/mkdir -p /sybase
+
+RUN /usr/bin/cp -r /opt/sap/usr/sap/ /usr/sap/
+RUN /usr/bin/cp -r /opt/sap/sapmnt/ /sapmnt/
+RUN /usr/bin/cp -r /opt/sap/sybase/ /sybase/
+
+VOLUME /usr/sap
+VOLUME /sapmnt
+VOLUME /sybase
+
+CMD [unused]
