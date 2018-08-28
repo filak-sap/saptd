@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  nwabap:
+    image: sap_td_os
+    hostname: vhcalnplci
+    ports:
+      - "5000:5000"
+      - "3200:3200"
+      - "3300:3300"
+      - "8000:8000"
+      - "44300:44300"
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+      - "sap_td_usrsap:/usr/sap"
+      - "sap_td_sapmnt:/sapmnt"
+      - "sap_td_sybase:/sybase"
+    container_name: myabap
+
+volumes:
+    sap_td_usrsap:
+        external: true
+    sap_td_sapmnt:
+        external: true
+    sap_td_sybase:
+        external: true
