@@ -1,4 +1,4 @@
-#!/usr/bin/expect
+#!/usr/bin/expect --
 # Author: Jakub Filak <jakub.filak@sap.com>
 
 set optPassword --password
@@ -57,38 +57,51 @@ if {$password == ""} {
     usage_and_exit 5
 }
 
-set timeout 20
+set timeout 5
 spawn /opt/sap/td/appliance/install.sh
 
+set status 10
 expect {
     "Do you agree to the above license terms? yes/no:" {
         send "yes\n"
     }
 
-    eof { exit 5 }
+    timeout { exit [expr $status + 1] }
+    eof     { exit [expr $status + 2] }
 }
 
+set status 20
 expect {
     "Please enter a password:" {
         send "$password\n"
     }
 
-    eof { exit 5 }
+    timeout { exit [expr $status + 1] }
+    eof     { exit [expr $status + 2] }
 }
 
+set status 30
 expect {
     "Please re-enter password for verification:" {
         send "$password\n"
     }
 
-    eof { exit 5 }
+    timeout { exit [expr $status + 1] }
+    eof     { exit [expr $status + 2] }
 }
 
+set status 40
 expect {
     "extracting data archives..." { }
-     eof { exit 5 }
+
+    timeout { exit [expr $status + 1] }
+    eof     { exit [expr $status + 2] }
 }
 
 set timeout 7200
 
-expect
+set status 50
+expect {
+    timeout { exit [expr $status + 1] }
+    eof { exit 0 }
+}
