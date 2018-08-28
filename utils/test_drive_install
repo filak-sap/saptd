@@ -1,0 +1,87 @@
+#!/usr/bin/expect
+# Author: Jakub Filak <jakub.filak@sap.com>
+
+set optPassword --password
+set optAcceptLicense --accept-SAP-developer-license
+
+proc usage_and_exit {status} {
+    global optPassword
+    global optAcceptLicense
+
+    puts "Usage: $::argv0 \[-h|--help\] $optPassword PASSWORD $optAcceptLicense"
+    exit $status
+}
+
+if {$argc == 0} {
+    usage_and_exit 1
+}
+
+set password ""
+set accepted "no"
+
+set i 0
+while {$i < $argc} {
+    set opt_arg [lindex $argv $i]
+    switch -- $opt_arg \
+        $optPassword {
+            incr i
+            if {$i >= $argc} {
+                puts stderr "Missing value of the option --password"
+                usage_and_exit 3
+            }
+
+            set password [lindex $argv $i]
+        } \
+        $optAcceptLicense {
+            set accepted "yes"
+        } \
+        -h - \
+        --help {
+            usage_and_exit 0
+        } \
+        default {
+            puts "Illegal option: $opt_arg"
+            usage_and_exit 2
+        }
+
+    incr i
+}
+
+if {$accepted == "no"} {
+    puts stderr "License was not accepted"
+    usage_and_exit 4
+}
+
+if {$password == ""} {
+    puts stderr "Password was not provided"
+    usage_and_exit 5
+}
+
+set timeout 20
+spawn /opt/sap/td/appliance/install.sh
+
+expect {
+    "Do you agree to the above license terms? yes/no:" {
+        send "yes\n"
+    }
+
+    eof { exit 5 }
+}
+
+expect {
+    "Please enter a password:" {
+        send "$password\n"
+    }
+
+    eof { exit 5 }
+}
+
+expect {
+    "Please re-enter password for verification:" {
+        send "$password\n"
+    }
+
+    eof { exit 5 }
+}
+
+expect
