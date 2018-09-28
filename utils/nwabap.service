@@ -5,8 +5,12 @@ Requisite=uuidd.socket
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/su - npladm -c "startsap"
-ExecStop=/usr/bin/su - npladm -c "stopsap"
+RemainAfterExit=yes
+User=npladm
+Group=sapsys
+WorkingDirectory=~
+ExecStart=/bin/bash -l -c "startsap ALL"
+ExecStop=/bin/bash -l -c "stopsap ALL"
 
 [Install]
 WantedBy=multi-user.target
